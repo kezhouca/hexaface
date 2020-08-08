@@ -1,0 +1,61 @@
+.jumbotron {
+  background: none !important;
+  position: fixed;
+  left:50px;
+}
+
+
+.bottom {
+  position:fixed;
+  bottom:0;
+}
+
+.bottomright {
+  position:fixed;
+  bottom: 8px;
+  right: 16px;
+  font-size: 18px;
+}
+
+ul.horizontal-list li {
+  display:inline-block;
+  margin-right: 3px;
+  margin-bottom: 3px;
+}
+
+ul.horizontal-list li img {
+    width: 49px;
+    height: auto;
+}
+
+.form-column form{
+    background: #E0E0E0;
+    padding: 1px 10px;
+    margin-bottom: 10px;
+}
+.form-column .fm-img-container{
+	margin-bottom: 10px;
+	text-align: center;
+}
+.form-column.double {
+  padding: 10px 10px;
+}
+.form-column.double form p {
+  margin-bottom: 0px;
+}
+.processing-container .loading-img{
+	width: 300px;
+	height: auto;
+}
+.processing-container.abs {
+  opacity: 0.5;
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  top: 0
+}
+.processing-container.abs .loading-img{
+  width: 150px;
+  height: auto;
+}

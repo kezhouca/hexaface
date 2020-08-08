@@ -1,0 +1,76 @@
+{% extends "base1.html" %}
+{% block body_block %}
+
+<div class="col-md-3 form-column">
+  <form action="{% url "FaceDetection" %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <p> {{ form.non_field_errors }}</p>
+    <p>{{ form.imagefile.label_tag }}
+      {{ form.imagefile.help_text }}
+    </p>
+
+    <p> {{ form.imagefile.errors }}
+      {{ form.imagefile }}
+    </p>
+
+    <p> <input type="submit" name="upload_img" class="btn btn-primary btn-lg btn-block" value="Upload">
+    </p>
+  </form>
+
+  {% if documents %}
+  <div class="fm-img-container">
+    <img class="img-thumbnail" src="{{ image_path1 }}" alt="">
+  </div>
+  <button type="button" id="image_process" class="btn btn-primary btn-lg btn-block">Detect Faces</button>
+  {% endif %}
+
+</div>
+
+<div class="col-md-9">
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			Result - Face Detection
+		</div>
+		<div class="panel-body">
+			<div class="results-container">
+			</div>
+			<div class="processing-container text-center abs">
+				<img class="loading-img" src="/static/processing.gif">
+				<h3 class="text-muted">Loading...</h3>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+  var showLoading = function(){
+    $('.processing-container').fadeIn();
+  }
+  var hideLoading = function(){
+    $('.processing-container').fadeOut();
+  }
+  var hardHide = function(){
+    $('.processing-container').hide();
+  }
+  $(document).ready(function(){
+    hardHide();
+    $("#image_process").click(function(event){
+      div = $(".results-container");
+      div.empty();
+      showLoading();
+      $('.processing-container h3').text('Loading...');
+      $(event.target).prop('disabled', true);
+      $.ajax({url: "/engine_1/",
+             type : 'get',
+             success: function(results){
+                img = $('<img class=""/>').attr('src',results['img']);
+                div.append(img);
+                hideLoading();
+                $(event.target).prop('disabled', false);
+             }
+      });
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block body_block %}
+
+<h1> Face Generation: </h1>
+
+<div class="jumbotron2">
+    <ul class="horizontal-list">
+    {% for img in imgs %}
+        <li><img src={{ img }} /></li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div>
+  <h5>Thanks for using HexaFace portal!</h5>
+  <h6>Copyright : </h6>
+
+</div>
+
+{% endblock %}

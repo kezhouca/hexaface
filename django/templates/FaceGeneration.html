@@ -1,0 +1,109 @@
+{% extends "base6.html" %}
+{% block body_block %}
+
+<div class="col-md-3 form-column">
+
+  <button type="button" id="image_process" class="btn btn-primary btn-lg btn-block">Generate Faces</button>
+  
+</div>
+<div class="col-md-9">
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			Result - Face Generation
+		</div>
+		<div class="panel-body">
+			<div class="results-container">
+				<ul class="horizontal-list"></ul>
+			</div>
+			<div class="processing-container text-center abs">
+				<img class="loading-img" src="/static/processing.gif">
+				<h3 class="text-muted">Generating...</h3>
+			</div>
+			<div id="plot-container"></div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+  var showLoading = function(){
+    $('.processing-container').fadeIn();
+  }
+  var hideLoading = function(){
+    $('.processing-container').fadeOut();
+  }
+  var hardHide = function(){
+    $('.processing-container').hide();
+  }
+  $(document).ready(function(){
+    hardHide();
+    $("#image_process").click(function(event){
+
+      ul = $(".results-container .horizontal-list");
+      ul.empty();
+      num_of_calls = 20;
+      i = 1;
+      gender_list = [];
+      $(".plot-container").empty();
+
+      showLoading();
+      $('.processing-container h3').text('Generated 0 of '+(num_of_calls*3)+'...');
+      $(event.target).prop('disabled', true);
+
+      var plot_gender = function(gender_list){
+        if(gender_list.length){
+          var counts = {male: 0,female: 0};
+          for (i in gender_list){
+            if(gender_list[i] === 'female'){
+              counts.female ++;
+            } else {
+              counts.male ++;
+            }
+          }
+          var plot_data = [
+            {
+              x: ['male', 'female'],
+              y: [counts.male, counts.female],
+              marker: {
+                color:['rgba(222,45,38,0.8)','rgba(55,128,191,0.8)']
+              },
+              type: 'bar'
+            }
+          ];
+          Plotly.newPlot('plot-container', plot_data);
+        }
+      }
+
+      var face_jax = function(i){
+        var batch_complete = (i === num_of_calls);
+        $.ajax({url: "/engine_6/",
+               type : 'get',
+               data: {
+                batch_complete: batch_complete ? 1 : 0
+               },
+               success: function(results){
+                  jQuery.each(results['imgs'],function(i,img){
+                    li = $('<li></li>');
+                    img = $('<img class="img-thumbnail"/>').attr('src',img);
+                    li.append(img);
+                    ul.append(li);
+                  });
+                  $('.processing-container h3').text('Generated '+(i*3)+' of '+(num_of_calls*3)+'...');
+                  jQuery.each(results['genders'],function(i,gender){
+                    gender_list.push(gender);
+                  })
+                  if(!batch_complete){
+                    face_jax(i+1);
+                  } else{
+                    hideLoading();
+                    $(event.target).prop('disabled', false);
+                    plot_gender(gender_list);
+                  }
+               }
+        });
+      }
+
+      face_jax(i);
+    });
+  });
+</script>
+{% endblock %}

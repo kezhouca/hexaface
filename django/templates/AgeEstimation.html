@@ -1,0 +1,65 @@
+{% extends "base3.html" %}
+{% block body_block %}
+<div class="col-md-3 form-column">
+<form action="{% url "AgeEstimation" %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <p> {{ form.non_field_errors }}</p>
+  <p>{{ form.imagefile.label_tag }}
+    {{ form.imagefile.help_text }}
+  </p>
+
+  <p> {{ form.imagefile.errors }}
+    {{ form.imagefile }}
+  </p>
+
+  <p> <input type="submit" name="upload_img" class="btn btn-primary btn-lg btn-block" value="Upload">
+  </p>
+</form>
+
+  {% if documents %}
+  <div class="fm-img-container">
+    <img class="img-thumbnail" src="{{ image_path1 }}" alt="">
+  </div>
+  <input type="submit" value="Click to start Assessment" style="margin-top: 10px;" class="btn btn-primary btn-lg" id="image_process">
+  {% endif %}
+  
+</div>
+
+<div class="col-md-9">
+{% if documents %}
+
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			Result - Age Estimation
+		</div>
+		<div class="panel-body">
+			
+			<div id="car_ex"></div>
+
+		</div>
+	</div>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+    $("#image_process").click(function(){
+
+      $('#car_ex').html('<img src="/static/processing.gif" style="width:60px; height:auto;"> Processing the Image...')
+
+      $.ajax({url: "/engine_3/",
+             type : 'get',
+             success: function(results){
+               $('#car_ex').html(results);
+
+              var div = document.getElementById('car_ex');
+              div.innerHTML = div.innerHTML + "Predicted Age: <div class='alert alert-warning'>" + results.age + "</div>";
+
+             }
+      });
+    });
+  });
+  </script>
+
+</div>
+{% endif %}
+{% endblock %}

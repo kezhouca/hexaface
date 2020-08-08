@@ -1,0 +1,96 @@
+{% extends "base5.html" %}
+
+{% block body_block %}
+<div class="col-md-3 form-column">
+<form action="{% url "FaceVerification" %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  	  <p> {{ form.non_field_errors }}</p>
+  	  <p>
+        {{ form.imagefile1.label_tag }}
+  		  {{ form.imagefile1.help_text }}
+  	  </p>
+
+  	  <p>
+        {{ form.imagefile1.errors }}
+  		  {{ form.imagefile1 }}
+  	  </p>
+
+    <p> {{ form.non_field_errors }}</p>
+    <p>
+      {{ form.imagefile2.label_tag }}
+      {{ form.imagefile2.help_text }}
+    </p>
+
+    <p>
+      {{ form.imagefile2.errors }}
+      {{ form.imagefile2 }}
+    </p>
+
+	<p>
+	  <input type="submit" name="upload_img" class="btn btn-primary btn-lg btn-block" value="Upload">
+	</p>
+</form>
+
+  {% if documents %}
+  <div class="fm-img-container">
+    <img class="img-thumbnail" src="{{ image_path1 }}" alt="">
+  </div>
+  <div class="fm-img-container">
+    <img class="img-thumbnail" src="{{ image_path2 }}" alt="">
+  </div>
+  <input type="submit" value="Verify Faces" style="margin-top: 10px;" class="btn btn-primary btn-lg btn-block" id="image_process"> 
+  {% endif %}
+  
+</div>
+<div class="col-md-9">
+{% if documents %}
+
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			Result - Face Verification
+		</div>
+		<div class="panel-body">
+			<div id="car_ex"></div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+  $(document).ready(function(){
+    $("#image_process").click(function(){
+
+      $('#car_ex').html('<img src="/static/processing.gif" style="width:60px; height:auto;"> Processing the Image...')
+
+      $.ajax({url: "/engine_5/",
+             type : 'get',
+             success: function(results){
+               $('#car_ex').html(results);
+
+              var div = document.getElementById('car_ex');
+
+              div.innerHTML = div.innerHTML + "<table width='100%'>";
+			  div.innerHTML = div.innerHTML + "<tr>";
+			  div.innerHTML = div.innerHTML + "<td align='center' width='50%'>";
+              div.innerHTML = div.innerHTML + "<img src='../pic_upload/detected_face1.jpeg' />";
+			  div.innerHTML = div.innerHTML + "</td>";
+			  div.innerHTML = div.innerHTML + "<td align='center' width='50%'>";
+              div.innerHTML = div.innerHTML + "<img src='../pic_upload/detected_face2.jpeg' />";
+              div.innerHTML = div.innerHTML + "</td>";
+			  div.innerHTML = div.innerHTML + "</tr>";
+			  div.innerHTML = div.innerHTML + "</table>";
+			  div.innerHTML = div.innerHTML + "<br/><br/>";
+			  div.innerHTML = div.innerHTML + "Match: <div class='alert alert-warning'>" + results.result_text + "</div>";
+			  div.innerHTML = div.innerHTML + "Cosine Similarity: <div class='alert alert-warning'>" + results.cosine_similarity + "</div>";
+			  div.innerHTML = div.innerHTML + "Euclidean Distance: <div class='alert alert-warning'>" + results.euclidean_distance + "</div>";
+			  
+             }
+      });
+    });
+  });
+</script>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
